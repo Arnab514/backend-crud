@@ -1,14 +1,16 @@
 const express = require('express')
 const path = require('path')
 const app = express()
+const authRoute = require('./Routes/authRoutes')
 
 app.set('views' , './view') //views is everything that is inside view folder
 app.set('view engine' , 'ejs') //seting the view engine using ejs 
 
 app.use(express.static(path.join(__dirname , 'view')))
+app.use('/' , authRoute)
 
 app.get('/' , (req , res) => {
-    return res.render('index')
+    res.send("home")
 })
 
 app.listen(8000, () => {
