@@ -1,6 +1,7 @@
 const formidable = require('formidable')
 const validator = require('validator') 
 const authModel = require('../models/authModel.js')
+const fs = require('fs')
 
 class AuthController {
     registerPage = (req , res) => {
@@ -8,7 +9,7 @@ class AuthController {
     }
     userRegister = async(req , res) => {
         const form = new formidable.IncomingForm({multiples: true})
-        form.parse(req , (err, fields, files) => {
+        form.parse(req , async(err, fields, files) => {
             
             // Ensure fields are not arrays because it needs to be done when we are using formidable
             const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
@@ -17,7 +18,7 @@ class AuthController {
             let image = Array.isArray(files.image) ? files.image[0] : files.image;
             
             // Log processed image
-            console.log('Processed Image:', image);
+            // console.log('Processed Image:', image);
 
             const error = {}
 
@@ -51,7 +52,26 @@ class AuthController {
                 return res.render('dashboard/register' , {error})
             }
             else {
-                console.log("errror not found")
+                try {
+                    const user = await authModel.findOne({email})
+                    console.log(user)
+                    if (!user) {
+                        image.originalFilename = Date.now() + image.originalFilename;
+                        const distPath = __dirname + `/../view/assets/image/${image.originalFilename}`
+                        fs.copyFile(image.filepath , distPath , async(err) => {
+                            if (!err) {
+                                console.log("register next...")
+                            }
+                            else{
+                                console.log(err)
+                            }
+                        })
+                    } else {
+                        req.flash('error', 'email already exists')
+                    }
+                } catch (error) {
+                    
+                }
             }
         })
     }
