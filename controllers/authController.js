@@ -1,5 +1,7 @@
 const formidable = require('formidable')
 const validator = require('validator') 
+const authModel = require('../models/authModel.js')
+
 class AuthController {
     registerPage = (req , res) => {
         return res.render('../view/dashboard/register.ejs' , {error : ''})
@@ -7,14 +9,8 @@ class AuthController {
     userRegister = async(req , res) => {
         const form = new formidable.IncomingForm({multiples: true})
         form.parse(req , (err, fields, files) => {
-
-            // console.log('Fields:', fields);
-            // console.log('Files:', files);
             
-            // const {name , email , password} = fields
-            // let {image} = files
-            
-            // Ensure fields are not arrays
+            // Ensure fields are not arrays because it needs to be done when we are using formidable
             const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
             const email = Array.isArray(fields.email) ? fields.email[0] : fields.email;
             const password = Array.isArray(fields.password) ? fields.password[0] : fields.password;
@@ -54,7 +50,7 @@ class AuthController {
             if (Object.keys(error).length > 0) {
                 return res.render('dashboard/register' , {error})
             }
-            else{
+            else {
                 console.log("errror not found")
             }
         })
