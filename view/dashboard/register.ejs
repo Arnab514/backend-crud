@@ -75,10 +75,15 @@
                     %>
                 </div>
                 <button class="w-full px-6 py-2 rounded-md items-center bg-blue-500 text-white cursor-pointer hover:bg-blue-700">Register</button>
-                <div id="alert" class="relative p-2 bg-red-500 rounded-sm my-2 text-white flex justify-between">
-                    <p class="text-sm">Emaill already exists</p>
-                    <span id="close" class= "cursor-pointer font-bold text-md">x</span>
-                </div>
+                <% if(locals.messages && messages.error)
+                    {%>
+                        <div id="alert" class="relative p-2 bg-red-500 rounded-sm my-2 text-white flex justify-between">
+                            <p class="text-sm"><%= messages.error %></p>
+                            <span id="close" class= "cursor-pointer font-bold text-md">x</span>
+                        </div>
+                    <%} 
+                %>
+                
                 <div class="w-full flex text-blue-600 mt-2 items-center justify-center">
                     <a href="/login">Login Account</a>
                 </div>

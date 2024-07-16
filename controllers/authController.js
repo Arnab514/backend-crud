@@ -2,6 +2,8 @@ const formidable = require('formidable')
 const validator = require('validator') 
 const authModel = require('../models/authModel.js')
 const fs = require('fs')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 class AuthController {
     registerPage = (req , res) => {
@@ -60,14 +62,38 @@ class AuthController {
                         const distPath = __dirname + `/../view/assets/image/${image.originalFilename}`
                         fs.copyFile(image.filepath , distPath , async(err) => {
                             if (!err) {
-                                console.log("register next...")
+                                const createUser = await authModel.create(
+                                    {
+                                        name,
+                                        email,
+                                        password: await bcrypt.hash(password , 9),
+                                        image: image.originalFilename
+                                    }
+                                )
+                                const token = jwt.sign({
+                                    id: createUser.id,
+                                    name: createUser.name,
+                                    email: createUser.email,
+                                    image: createUser.image
+                                }, 'arnabmajumder', {
+                                    expiresIn: '3d'
+                                })
+                                res.cookie('crudToken', token, {
+                                    expires: new Date(Date.now() + 3*24*60*60*1000) //3d in millisecond
+                                })
+
+                                req.flash('success' , 'You are successfully registered')
+                                return res.redirect('/dashboard')
                             }
                             else{
-                                console.log(err)
+                                req.flash('error', 'image upload failed, please try again')
+                                return res.redirect('/register')
+
                             }
                         })
                     } else {
                         req.flash('error', 'email already exists')
+                        return res.redirect('/register')
                     }
                 } catch (error) {
                     
