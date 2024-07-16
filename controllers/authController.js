@@ -56,7 +56,7 @@ class AuthController {
             else {
                 try {
                     const user = await authModel.findOne({email})
-                    console.log(user)
+                    // console.log(user)
                     if (!user) {
                         image.originalFilename = Date.now() + image.originalFilename;
                         const distPath = __dirname + `/../view/assets/image/${image.originalFilename}`
@@ -86,13 +86,13 @@ class AuthController {
                                 return res.redirect('/dashboard')
                             }
                             else{
-                                req.flash('error', 'image upload failed, please try again')
+                                req.flash('error', 'Image upload failed, please try again')
                                 return res.redirect('/register')
 
                             }
                         })
                     } else {
-                        req.flash('error', 'email already exists')
+                        req.flash('error', 'Email already exists')
                         return res.redirect('/register')
                     }
                 } catch (error) {
